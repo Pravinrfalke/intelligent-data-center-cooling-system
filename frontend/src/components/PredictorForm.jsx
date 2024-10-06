@@ -8,20 +8,34 @@ const PredictorForm = () => {
     Indoor_Temp_C: '',
     Fan_Speed_RPM: '',
   });
+  
+  const [prediction, setPrediction] = useState(null); // New state for storing the prediction result
+  const [error, setError] = useState(null); // State for error handling
   const navigate = useNavigate();
 
   // Handle form submission logic
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const response = await fetch('http://localhost:5000/predict', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(formData),
-    });
-    const result = await response.json();
-    console.log(result); // Handle the result as needed
+    try {
+      const response = await fetch('http://localhost:5000/predict', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch the prediction. Please try again.');
+      }
+
+      const result = await response.json();
+      setPrediction(result.Predicted_Water_Flow_GPM); // Store the predicted water flow
+      setError(null); // Reset any previous error
+    } catch (err) {
+      setError(err.message);
+      setPrediction(null); // Reset the prediction if there's an error
+    }
   };
 
   // Handle form input changes
@@ -40,6 +54,7 @@ const PredictorForm = () => {
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col justify-center items-center">
       <h1 className="text-3xl font-bold mb-6">Predict Water Flow (GPM)</h1>
+      
       <form onSubmit={handleSubmit} className="w-full max-w-lg bg-white p-6 rounded-lg shadow-md">
         {/* IT Load Input */}
         <div className="mb-4">
@@ -120,6 +135,19 @@ const PredictorForm = () => {
           </button>
         </div>
       </form>
+
+      {/* Show Prediction Result or Error */}
+      {prediction && (
+        <div className="mt-6 text-lg font-bold text-green-600">
+          Predicted Water Flow: {prediction.toFixed(2)} GPM
+        </div>
+      )}
+
+      {error && (
+        <div className="mt-6 text-lg font-bold text-red-600">
+          Error: {error}
+        </div>
+      )}
     </div>
   );
 };
