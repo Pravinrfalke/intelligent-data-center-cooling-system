@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+
+
 const PredictorForm = () => {
   const [formData, setFormData] = useState({
     IT_Load_kW: '',
@@ -61,7 +63,8 @@ const PredictorForm = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex flex-col justify-center items-center">
+    
+    <div className="min-h-screen bg-gray-100 flex flex-col justify-center items-center ">
       <h1 className="text-3xl font-bold mb-6">Predict Water Flow (GPM)</h1>
 
       {/* Notification Message */}
@@ -73,7 +76,7 @@ const PredictorForm = () => {
 
       {loading ? (
         // Loading Spinner
-        <div className="flex justify-center items-center">
+        <div className="flex justify-center items-center ">
           <svg
             className="animate-spin h-10 w-10 text-blue-500"
             xmlns="http://www.w3.org/2000/svg"
@@ -98,7 +101,7 @@ const PredictorForm = () => {
         </div>
       ) : (
         <>
-          <form onSubmit={handleSubmit} className="w-full max-w-lg bg-white p-6 rounded-lg shadow-md">
+          <form onSubmit={handleSubmit} className="w-full max-w-lg bg-white p-6 rounded-lg shadow-md" style={{ backgroundColor: 'lightgreen' }}> 
             {/* IT Load Input */}
             <div className="mb-4">
               <label htmlFor="IT_Load_kW" className="block text-sm font-medium text-gray-700">
@@ -111,6 +114,7 @@ const PredictorForm = () => {
                 onChange={handleChange}
                 className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                 required
+                placeholder='Enter In Range of 50 KW to 1000 KW .'
               />
             </div>
 
@@ -126,6 +130,7 @@ const PredictorForm = () => {
                 onChange={handleChange}
                 className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                 required
+                placeholder='Enter In Range of 10 °C to 50°C .'
               />
             </div>
 
@@ -141,6 +146,7 @@ const PredictorForm = () => {
                 onChange={handleChange}
                 className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                 required
+                placeholder='Enter In Range of 10 °C to 27°C .'
               />
             </div>
 
@@ -156,6 +162,7 @@ const PredictorForm = () => {
                 onChange={handleChange}
                 className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                 required
+                placeholder='Enter In Range of 800 RPM to 2500 RPM'
               />
             </div>
 
