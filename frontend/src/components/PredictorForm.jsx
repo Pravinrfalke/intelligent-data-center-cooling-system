@@ -1,124 +1,126 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const PredictorForm = () => {
   const [formData, setFormData] = useState({
     IT_Load_kW: '',
     Outdoor_Temp_C: '',
     Indoor_Temp_C: '',
-    Fan_Speed_RPM: ''
+    Fan_Speed_RPM: '',
   });
+  const navigate = useNavigate();
 
-  const [prediction, setPrediction] = useState(null);
-  const [error, setError] = useState(null);
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value
-    }));
-  };
-
+  // Handle form submission logic
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError(null);
+    const response = await fetch('http://localhost:5000/predict', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(formData),
+    });
+    const result = await response.json();
+    console.log(result); // Handle the result as needed
+  };
 
-    try {
-      const response = await fetch('http://localhost:5000/predict', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
+  // Handle form input changes
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+  };
 
-      const result = await response.json();
-
-      if (response.ok) {
-        setPrediction(result.Predicted_Water_Flow_GPM);
-      } else {
-        setError(result.error);
-      }
-    } catch (error) {
-      setError('An error occurred while making the prediction.');
-    }
+  // Navigate back to the landing page
+  const goBack = () => {
+    navigate('/');
   };
 
   return (
-    <form className="max-w-md mx-auto bg-white p-8 rounded-lg shadow-md space-y-6" onSubmit={handleSubmit}>
-      <h2 className="text-2xl font-bold text-gray-900 text-center mb-6">Predict Water Flow</h2>
-
-      <div>
-        <label className="block mb-2 text-sm font-medium text-gray-900" htmlFor="IT_Load_kW">IT Load (kW)</label>
-        <input
-          type="number"
-          name="IT_Load_kW"
-          value={formData.IT_Load_kW}
-          onChange={handleChange}
-          placeholder="Enter IT Load in kW"
-          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 shadow-sm"
-          required
-        />
-      </div>
-
-      <div>
-        <label className="block mb-2 text-sm font-medium text-gray-900" htmlFor="Outdoor_Temp_C">Outdoor Temp (°C)</label>
-        <input
-          type="number"
-          name="Outdoor_Temp_C"
-          value={formData.Outdoor_Temp_C}
-          onChange={handleChange}
-          placeholder="Enter Outdoor Temp in °C"
-          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 shadow-sm"
-          required
-        />
-      </div>
-
-      <div>
-        <label className="block mb-2 text-sm font-medium text-gray-900" htmlFor="Indoor_Temp_C">Indoor Temp (°C)</label>
-        <input
-          type="number"
-          name="Indoor_Temp_C"
-          value={formData.Indoor_Temp_C}
-          onChange={handleChange}
-          placeholder="Enter Indoor Temp in °C"
-          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 shadow-sm"
-          required
-        />
-      </div>
-
-      <div>
-        <label className="block mb-2 text-sm font-medium text-gray-900" htmlFor="Fan_Speed_RPM">Fan Speed (RPM)</label>
-        <input
-          type="number"
-          name="Fan_Speed_RPM"
-          value={formData.Fan_Speed_RPM}
-          onChange={handleChange}
-          placeholder="Enter Fan Speed in RPM"
-          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 shadow-sm"
-          required
-        />
-      </div>
-
-      <button
-        type="submit"
-        className="w-full bg-blue-600 text-white p-3 rounded-lg font-semibold shadow-lg hover:bg-blue-700 transition-all duration-300 ease-in-out"
-      >
-        Predict Water Flow
-      </button>
-
-      {prediction && (
-        <div className="mt-6 p-4 bg-green-100 text-green-900 rounded-lg text-center">
-          Predicted Water Flow (GPM): {prediction}
+    <div className="min-h-screen bg-gray-100 flex flex-col justify-center items-center">
+      <h1 className="text-3xl font-bold mb-6">Predict Water Flow (GPM)</h1>
+      <form onSubmit={handleSubmit} className="w-full max-w-lg bg-white p-6 rounded-lg shadow-md">
+        {/* IT Load Input */}
+        <div className="mb-4">
+          <label htmlFor="IT_Load_kW" className="block text-sm font-medium text-gray-700">
+            IT Load (kW)
+          </label>
+          <input
+            type="number"
+            name="IT_Load_kW"
+            value={formData.IT_Load_kW}
+            onChange={handleChange}
+            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+            required
+          />
         </div>
-      )}
 
-      {error && (
-        <div className="mt-6 p-4 bg-red-100 text-red-900 rounded-lg text-center">
-          {error}
+        {/* Outdoor Temperature Input */}
+        <div className="mb-4">
+          <label htmlFor="Outdoor_Temp_C" className="block text-sm font-medium text-gray-700">
+            Outdoor Temperature (°C)
+          </label>
+          <input
+            type="number"
+            name="Outdoor_Temp_C"
+            value={formData.Outdoor_Temp_C}
+            onChange={handleChange}
+            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+            required
+          />
         </div>
-      )}
-    </form>
+
+        {/* Indoor Temperature Input */}
+        <div className="mb-4">
+          <label htmlFor="Indoor_Temp_C" className="block text-sm font-medium text-gray-700">
+            Indoor Temperature (°C)
+          </label>
+          <input
+            type="number"
+            name="Indoor_Temp_C"
+            value={formData.Indoor_Temp_C}
+            onChange={handleChange}
+            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+            required
+          />
+        </div>
+
+        {/* Fan Speed Input */}
+        <div className="mb-4">
+          <label htmlFor="Fan_Speed_RPM" className="block text-sm font-medium text-gray-700">
+            Fan Speed (RPM)
+          </label>
+          <input
+            type="number"
+            name="Fan_Speed_RPM"
+            value={formData.Fan_Speed_RPM}
+            onChange={handleChange}
+            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+            required
+          />
+        </div>
+
+        {/* Submit Button */}
+        <div className="flex items-center justify-between">
+          <button
+            type="submit"
+            className="bg-blue-500 text-white px-4 py-2 rounded-lg shadow hover:bg-blue-600 transition duration-300"
+          >
+            Predict
+          </button>
+
+          {/* Back Button */}
+          <button
+            type="button"
+            onClick={goBack}
+            className="bg-gray-500 text-white px-4 py-2 rounded-lg shadow hover:bg-gray-600 transition duration-300"
+          >
+            Back
+          </button>
+        </div>
+      </form>
+    </div>
   );
 };
 
